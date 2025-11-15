@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Image or Video</title>
+</head>
+<body>
+    <h2>Upload Image or Video for Hostage Detection</h2>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li style="color:red;">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+
+    <form method="post" action="{{ url_for('upload_file') }}" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*,video/*" required>
+        <input type="submit" value="Upload">
+    </form>
+
+    {% if filename %}
+    <h3>Detection Result:</h3>
+    <img id="result_image" style="max-width: 640px; max-height: 480px;" />
+    <video id="result_video" width="640" height="480" controls autoplay loop style="display:none;">
+        <source src="{{ url_for('process_file', filename=filename) }}" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <script>
+        // Decide to show video or image stream based on file extension
+        const filename = "{{ filename }}";
+        const ext = filename.split('.').pop().toLowerCase();
+        if(['mp4','avi','mov'].includes(ext)) {
+            document.getElementById('result_video').style.display = 'block';
+            document.getElementById('result_image').style.display = 'none';
+            document.getElementById('result_video').src = "{{ url_for('process_file', filename=filename) }}";
+        } else {
+            // For images, fetch MJPEG stream and update img src continuously
+            let img = document.getElementById('result_image');
+            let sourceUrl = "{{ url_for('process_file', filename=filename) }}";
+            let xhr = new XMLHttpRequest();
+            xhr.open('GET', sourceUrl, true);
+            xhr.responseType = 'moz-chunked-arraybuffer' in XMLHttpRequest.prototype ? 'moz-chunked-arraybuffer' : 'text';
+            let data = "";
+            xhr.onreadystatechange = function() {
+                if(xhr.readyState === 3) {
+                    // Stream is chunked JPEG images, update image src here if needed
+                }
+            };
+            xhr.send();
+            // Or just set src to URL - the server sends MJPEG stream
+            img.src = sourceUrl;
+        }
+    </script>
+    {% endif %}
+</body>
+</html>
+
