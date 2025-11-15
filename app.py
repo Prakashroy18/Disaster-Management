@@ -19,10 +19,10 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 model = YOLO(YOLO_MODEL_PATH)
 
 # Twilio configuration - replace with your real credentials
-ACCOUNT_SID = 'AC9112337a9e7e162f31b917561d352bbd'
-AUTH_TOKEN = 'e77dca0da9bb8cd5bc18934e93e0879c'
+ACCOUNT_SID = 'A'
+AUTH_TOKEN = 'e'
 TWILIO_PHONE = '+12314409475'
-TARGET_PHONE = '+91 95155 89057'
+TARGET_PHONE = '+91 97'
 twilio_client = Client(ACCOUNT_SID, AUTH_TOKEN)
 
 alert_sent = False  # To avoid spamming alerts
